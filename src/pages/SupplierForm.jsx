@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 // Use environment variable for base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:10000';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`, // ✅ Use environment variable

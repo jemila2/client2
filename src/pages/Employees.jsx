@@ -20,7 +20,7 @@ const Employees = () => {
         };
 
         const response = await axios.get(
-          "http://localhost:3001/api/employees",
+          "http://localhost:10000/api/employees",
           config
         );
         setEmployees(response.data);
@@ -50,7 +50,7 @@ const Employees = () => {
       };
 
       await axios.delete(
-        `http://localhost:3001/api/employees/${id}`,
+        `http://localhost:10000/api/employees/${id}`,
         config
       );
       setEmployees(employees.filter((emp) => emp._id !== id));

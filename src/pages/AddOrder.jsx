@@ -32,7 +32,7 @@ const AddOrder = () => {
     if (user?.role === 'admin') {
       const fetchCustomers = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/customers');
+          const response = await axios.get('http://localhost:10000/api/customers');
           setCustomers(response.data);
         } catch (err) {
           setError('Failed to fetch customers');

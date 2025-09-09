@@ -17,13 +17,13 @@ const Dashboard = () => {
         setError('');
         
         const [customersRes, ordersRes, suppliersRes] = await Promise.all([
-          fetch('http://localhost:5000/api/customers', {
+          fetch('http://localhost:10000/api/customers', {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          fetch('http://localhost:5000/api/orders', {
+          fetch('http://localhost:10000/api/orders', {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          fetch('http://localhost:5000/api/suppliers', {
+          fetch('http://localhost:10000/api/suppliers', {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);

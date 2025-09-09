@@ -34,7 +34,7 @@ const OrdersPage = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication required');
       
-      const response = await axios.get('http://localhost:3001/api/orders', {
+      const response = await axios.get('http://localhost:10000/api/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

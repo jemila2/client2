@@ -84,13 +84,13 @@ const EmployeeForm = ({ employee }) => {
 
       if (employee?._id) {
         await axios.put(
-          `http://localhost:3001/api/employees/${employee._id}`,
+          `http://localhost:10000/api/employees/${employee._id}`,
           payload,
           config
         );
       } else {
         await axios.post(
-          'http://localhost:3001/api/employees',
+          'http://localhost:10000/api/employees',
           payload,
           config
         );

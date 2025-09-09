@@ -15,7 +15,7 @@ const ResetPassword = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/auth/verify-reset-token/${token}`);
+        const response = await axios.get(`http://localhost:10000/api/auth/verify-reset-token/${token}`);
         setIsValidToken(response.data.success);
       } catch (err) {
         setError(err.response?.data?.message || 'Invalid or expired token');
@@ -34,7 +34,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/reset-password', {
+      const response = await axios.post('http://localhost:10000/api/auth/reset-password', {
         token,
         newPassword: password
       });

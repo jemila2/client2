@@ -92,7 +92,7 @@ const CustomerAddOrder = () => {
     console.log('Order data:', orderData); // ✅ Now it's defined
 
     const response = await axios.post(
-      'http://localhost:5000/api/orders',
+      'http://localhost:10000/api/orders',
       orderData,
       {
         headers: {

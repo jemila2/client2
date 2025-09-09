@@ -12,7 +12,7 @@ const CustomerList = ({ customers, onDelete }) => {
 
   const handleDelete = async (customerId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/customers/${customerId}`, {
+      const response = await fetch(`http://localhost:10000/api/customers/${customerId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

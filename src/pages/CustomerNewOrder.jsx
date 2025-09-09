@@ -184,7 +184,7 @@ const CustomerNewOrder = () => {
 
       console.log('Submitting order:', orderData);
       
-      const response = await axios.post('http://localhost:3001/api/orders', orderData, {
+      const response = await axios.post('http://localhost:10000/api/orders', orderData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

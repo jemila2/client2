@@ -43,7 +43,7 @@ const AddEmployee = () => {
 
       // Send request with admin auth token
       const response = await axios.post(
-        'http://localhost:5000/api/employees',
+        'http://localhost:10000/api/employees',
         {
           ...formData,
           createdBy: user._id // Track which admin created this employee
