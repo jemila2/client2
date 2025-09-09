@@ -1,16 +1,11 @@
+// main.jsx - CORRECT (no Router here)
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { HashRouter as Router } from 'react-router-dom' // Use HashRouter for GitHub Pages
 import App from './App'
-import { AuthProvider } from './context/AuthContext'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Router>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </Router>
+    <App /> {/* No Router here! */}
   </React.StrictMode>
 )
