@@ -109,37 +109,33 @@ export function AuthProvider({ children }) {
     }
   };
 
-
-
-
-  // Updated register function in AuthContext
-const register = async (userData) => {
-  try {
-    // Determine endpoint based on role or secretKey
-    const endpoint = userData.secretKey ? '/auth/register-admin' : '/auth/register';
-    
-    const response = await api.post(endpoint, userData);
-    
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      const user = {
-        ...response.data.user,
-        id: response.data.user._id || response.data.user.id,
-        role: (response.data.user.role || 'user').toLowerCase()
+  const register = async (userData) => {
+    try {
+      const response = await api.post('/auth/register', userData);
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        const user = {
+          ...response.data.user,
+          id: response.data.user._id || response.data.user.id,
+          role: (response.data.user.role || 'user').toLowerCase()
+        };
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
+      return { 
+        success: true,
+        user: response.data.user 
       };
-      setUser(user);
-      localStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw new Error(error.response?.data?.message || 'Registration failed');
     }
-    
-    return { 
-      success: true,
-      user: response.data.user 
-    };
-  } catch (error) {
-    console.error('Registration error:', error);
-    throw new Error(error.response?.data?.message || 'Registration failed');
-  }
-};
+  };
+
+
+  
 
   const logout = () => {
     localStorage.removeItem('token');

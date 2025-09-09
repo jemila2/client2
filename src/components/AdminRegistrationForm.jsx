@@ -35,18 +35,26 @@ const AdminRegistrationForm = ({ onSuccess }) => {
       } catch (error) {
         console.error('Error checking admin existence:', error);
         
+        // Handle different error scenarios
         if (error.code === 'ECONNABORTED') {
           console.log('Backend timeout, assuming no admin exists');
           setAdminExists(false);
           toast.info('Backend is slow to respond. You can try creating an admin account.');
-        } else if ([401, 404].includes(error.response?.status)) {
-          console.log('401/404 error, assuming no admin exists');
-          setAdminExists(false);
-          toast.info('No admin account found. You can create the first admin account.');
+        } else if (error.response?.status === 404) {
+          console.log('Endpoint not found, trying alternative approach');
+          // Try the standard users endpoint as fallback
+          try {
+            const usersResponse = await api.get('/users');
+            const adminUsers = usersResponse.data.filter(u => u.role === 'admin');
+            setAdminExists(adminUsers.length > 0);
+          } catch (fallbackError) {
+            console.log('Fallback also failed, assuming no admin exists');
+            setAdminExists(false);
+          }
         } else {
           console.log('Other error, assuming no admin exists');
           setAdminExists(false);
-          toast.error('Could not verify admin status. You can try creating an admin account.');
+          toast.info('Could not verify admin status. You can try creating an admin account.');
         }
       } finally {
         setCheckingAdmin(false);
@@ -109,11 +117,11 @@ const AdminRegistrationForm = ({ onSuccess }) => {
 
       toast.success('Admin account created successfully!');
       
+      // Auto-login after successful registration
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        login(response.data.user.email, formData.password)
-          .then(() => console.log('Admin logged in successfully'))
-          .catch(err => console.error('Login error:', err));
+        // Update auth context with new user data
+        window.location.href = '/dashboard'; // Simple redirect to refresh auth state
       }
       
       setFormData({
@@ -130,15 +138,12 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     } catch (error) {
       console.error('Registration error:', error);
       
-      if (error.response?.data?.status === 'admin_exists') {
-        toast.error('Admin account already exists. Only one admin is allowed.');
-        setAdminExists(true);
-      } else if (error.response?.data?.status === 'invalid_secret') {
-        toast.error('Invalid admin secret key.');
-      } else if (error.response?.data?.status === 'user_exists') {
-        toast.error('User already exists with this email.');
+      if (error.response?.status === 404) {
+        toast.error('Admin registration endpoint not found. Please check backend implementation.');
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
       } else {
-        toast.error(error.response?.data?.error || 'Failed to create admin account');
+        toast.error('Failed to create admin account. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -177,8 +182,14 @@ const AdminRegistrationForm = ({ onSuccess }) => {
         </p>
         <div className="mt-6 text-center">
           <button
+            onClick={() => navigate('/login')}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mr-2"
+          >
+            Go to Login
+          </button>
+          <button
             onClick={() => window.location.reload()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
           >
             Refresh Page
           </button>
@@ -232,7 +243,7 @@ const AdminRegistrationForm = ({ onSuccess }) => {
             value={formData.password}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded mt-1"
-            placeholder="Create a strong password"
+            placeholder="Create a strong password (min. 6 characters)"
             minLength="6"
             disabled={loading}
           />
