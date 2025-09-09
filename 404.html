@@ -4,37 +4,18 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // Single Page App redirect for GitHub Pages
+      // Get the path from the URL
       const path = window.location.pathname;
-      const search = window.location.search;
-      const hash = window.location.hash;
+      const isGitHubPages = window.location.hostname.includes('github.io');
       
-      // Check if we're already on index.html or have a file extension
-      const isAlreadyOnApp = path.includes('index.html') || path.includes('.');
-      
-      if (!isAlreadyOnApp) {
-        // Build the redirect URL with hash routing
-        let redirectPath = path;
-        
-        // Remove leading/trailing slashes for clean hash routing
-        if (redirectPath !== '/') {
-          redirectPath = redirectPath.replace(/^\/|\/$/g, '');
-        }
-        
-        // Create the hash URL for React Router
-        const redirectUrl = '/client2/index.html#' + 
-          (redirectPath === '/' ? '' : '/' + redirectPath) + 
-          search + 
-          hash;
-        
-        window.location.href = redirectUrl;
+      // Redirect to the main page with the path as a hash
+      if (isGitHubPages && path !== '/client2/') {
+        const newPath = path.replace('/client2', '');
+        window.location.href = '/client2/#' + newPath;
       }
     </script>
-    <noscript>
-      <meta http-equiv="refresh" content="0; url=/client2/index.html">
-    </noscript>
   </head>
   <body>
-    <p>Redirecting to your application...</p>
+    <p>Redirecting...</p>
   </body>
 </html>
