@@ -1,6 +1,6 @@
 {
-  "name": "cdclient-1",
-  "homepage": "https://jemila2.github.io/cdclient-1/",
+  "name": "client2",
+  "homepage": "https://jemila2.github.io/client2/",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
