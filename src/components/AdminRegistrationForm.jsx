@@ -27,7 +27,8 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     const checkAdminExists = async () => {
       try {
         console.log('Checking if admin exists...');
-        const response = await api.get('/admin/admin-exists', {
+        // ✅ FIXED: Added /api/ prefix
+        const response = await api.get('/api/admin/admin-exists', {
           timeout: 10000
         });
         setAdminExists(response.data.adminExists);
@@ -35,16 +36,15 @@ const AdminRegistrationForm = ({ onSuccess }) => {
       } catch (error) {
         console.error('Error checking admin existence:', error);
         
-        // Handle different error scenarios
         if (error.code === 'ECONNABORTED') {
           console.log('Backend timeout, assuming no admin exists');
           setAdminExists(false);
           toast.info('Backend is slow to respond. You can try creating an admin account.');
         } else if (error.response?.status === 404) {
-          console.log('Endpoint not found, trying alternative approach');
+          console.log('Admin endpoint not found, trying alternative approach');
           // Try the standard users endpoint as fallback
           try {
-            const usersResponse = await api.get('/users');
+            const usersResponse = await api.get('/api/users');
             const adminUsers = usersResponse.data.filter(u => u.role === 'admin');
             setAdminExists(adminUsers.length > 0);
           } catch (fallbackError) {
@@ -106,7 +106,8 @@ const AdminRegistrationForm = ({ onSuccess }) => {
 
     try {
       console.log('Attempting to create admin account...');
-      const response = await api.post('/admin/register-admin', {
+      // ✅ FIXED: Added /api/ prefix
+      const response = await api.post('/api/admin/register-admin', {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -117,11 +118,9 @@ const AdminRegistrationForm = ({ onSuccess }) => {
 
       toast.success('Admin account created successfully!');
       
-      // Auto-login after successful registration
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        // Update auth context with new user data
-        window.location.href = '/dashboard'; // Simple redirect to refresh auth state
+        window.location.href = '/dashboard';
       }
       
       setFormData({
