@@ -1,40 +1,27 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // Single Page App redirect for GitHub Pages
-      const path = window.location.pathname;
-      const search = window.location.search;
-      const hash = window.location.hash;
-      
-      // Check if we're already on index.html or have a file extension
-      const isAlreadyOnApp = path.includes('index.html') || path.includes('.');
-      
-      if (!isAlreadyOnApp) {
-        // Build the redirect URL with hash routing
-        let redirectPath = path;
-        
-        // Remove leading/trailing slashes for clean hash routing
-        if (redirectPath !== '/') {
-          redirectPath = redirectPath.replace(/^\/|\/$/g, '');
+        // Check if we're on GitHub Pages
+        if (window.location.hostname.includes('github.io')) {
+            const segment = 1; // Adjust this based on your repo structure
+            const path = window.location.pathname.split('/');
+            
+            // Check if we're already at the correct path
+            if (path[segment] === 'client2') {
+                // Already at the right path, redirect to index with hash routing
+                const newPath = path.slice(segment + 1).join('/');
+                window.location.href = '/client2/#' + (newPath ? '/' + newPath : '');
+            } else {
+                // Need to add the repository name to the path
+                window.location.href = '/client2/#' + window.location.pathname + window.location.search;
+            }
         }
-        
-        // Create the hash URL for React Router
-        const redirectUrl = '/client2/index.html#' + 
-          (redirectPath === '/' ? '' : '/' + redirectPath) + 
-          search + 
-          hash;
-        
-        window.location.href = redirectUrl;
-      }
     </script>
-    <noscript>
-      <meta http-equiv="refresh" content="0; url=/client2/index.html">
-    </noscript>
-  </head>
-  <body>
-    <p>Redirecting to your application...</p>
-  </body>
+</head>
+<body>
+    <p>Redirecting to the correct page...</p>
+</body>
 </html>
