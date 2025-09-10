@@ -1,13 +1,11 @@
-
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   FiHome, FiShoppingBag, FiPlusCircle, 
   FiUser, FiLogOut, FiX, FiUsers, 
   FiLayers, FiTruck, FiPackage, FiList,
-  FiDollarSign, FiSettings, FiClipboard,
-  FiCalendar, FiCreditCard, FiHelpCircle,
-  FiPieChart, FiInfo, FiMail, FiUserCheck
+  FiDollarSign, FiSettings, FiHelpCircle,
+  FiPieChart
 } from 'react-icons/fi';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -19,23 +17,27 @@ const Sidebar = ({ isOpen, onClose }) => {
     navigate('/login');
   };
 
+  // Helper function to add hash prefix to paths for consistency
+  const withHash = (path) => {
+    return path.startsWith('#') ? path : `#${path}`;
+  };
+
   const getDashboardPath = () => {
-    if (!user) return '/';
+    if (!user) return '#/';
     switch(user.role) {
-      case 'admin': return '/admin';
-      case 'employee': return '/dashboard';
-      case 'supplier': return '/dashboard';
-      case 'customer': return '/customer/dashboard';
-      default: return '/';
+      case 'admin': return '#/admin';
+      case 'employee': return '#/dashboard';
+      case 'supplier': return '#/dashboard';
+      case 'customer': return '#/customer/dashboard';
+      default: return '#/';
     }
   };
 
-  // Get the correct profile path based on user role
   const getProfilePath = () => {
-    if (!user) return '/profile';
+    if (!user) return '#/profile';
     return user.role === 'admin' 
-      ? '/profile' 
-      : `/profile/${user._id || user.id || user.employeeId}`;
+      ? '#/profile' 
+      : `#/profile/${user._id || user.id || user.employeeId}`;
   };
 
   return (
@@ -66,22 +68,18 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'admin' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Management</div>
-              <NavItem to="/orders" icon={<FiLayers />}>
+              <NavItem to="#/orders" icon={<FiLayers />}>
                 All Orders
               </NavItem>
-              <NavItem to="/suppliers" icon={<FiTruck />}>
+              <NavItem to="#/suppliers" icon={<FiTruck />}>
                 Suppliers
               </NavItem>
-              
-           
-            
-              <NavItem to="/inventory" icon={<FiPackage />}>
+              <NavItem to="#/inventory" icon={<FiPackage />}>
                 Inventory
               </NavItem>
-              <NavItem to="/settings" icon={<FiSettings />}>
+              <NavItem to="#/settings" icon={<FiSettings />}>
                 Settings
               </NavItem>
-            
             </>
           )}
 
@@ -89,16 +87,15 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'employee' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Orders</div>
-              <NavItem to="/orders" icon={<FiShoppingBag />}>
+              <NavItem to="#/orders" icon={<FiShoppingBag />}>
                 My Orders
               </NavItem>
-              <NavItem to="/orders/new" icon={<FiPlusCircle />}>
+              <NavItem to="#/orders/new" icon={<FiPlusCircle />}>
                 New Order
               </NavItem>
-              <NavItem to="/customers" icon={<FiUsers />}>
+              <NavItem to="#/customers" icon={<FiUsers />}>
                 Customers
               </NavItem>
-             
             </>
           )}
 
@@ -106,16 +103,16 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'supplier' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Supplier Portal</div>
-              <NavItem to="/orders" icon={<FiList />}>
+              <NavItem to="#/orders" icon={<FiList />}>
                 Orders
               </NavItem>
-              <NavItem to="/inventory" icon={<FiPackage />}>
+              <NavItem to="#/inventory" icon={<FiPackage />}>
                 Inventory
               </NavItem>
-              <NavItem to="/payments" icon={<FiDollarSign />}>
+              <NavItem to="#/payments" icon={<FiDollarSign />}>
                 Payments
               </NavItem>
-              <NavItem to="/settings" icon={<FiSettings />}>
+              <NavItem to="#/settings" icon={<FiSettings />}>
                 Settings
               </NavItem>
             </>
@@ -125,16 +122,16 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'customer' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">My Account</div>
-              <NavItem to="/customer/dashboard" icon={<FiPieChart />}>
+              <NavItem to="#/customer/dashboard" icon={<FiPieChart />}>
                 Dashboard
               </NavItem>
-              <NavItem to="/customer/orders" icon={<FiShoppingBag />}>
+              <NavItem to="#/customer/orders" icon={<FiShoppingBag />}>
                 My Orders
               </NavItem>
-              <NavItem to="/customer/orders/new" icon={<FiPlusCircle />}>
+              <NavItem to="#/customer/orders/new" icon={<FiPlusCircle />}>
                 New Order
               </NavItem>
-              <NavItem to="/customer/support" icon={<FiHelpCircle />}>
+              <NavItem to="#/customer/support" icon={<FiHelpCircle />}>
                 Support
               </NavItem>
             </>
@@ -155,12 +152,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </p>
               </div>
             </div>
-
-            {user?.role === 'employee' && (
-              <div className="mb-4">
-             
-              </div>
-            )}
 
             <button
               onClick={handleLogout}
