@@ -140,6 +140,7 @@ export default defineConfig(({ mode }) => {
     
     build: {
       outDir: 'dist',
+      copyPublicDir: true,
       assetsDir: 'assets',
       emptyOutDir: true,
       sourcemap: false,
