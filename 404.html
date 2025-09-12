@@ -4,10 +4,17 @@
     <meta charset="utf-8">
     <title>Redirecting to LaundryPro</title>
     <script>
-      // Simple redirect for GitHub Pages
-      if (window.location.hostname.includes('github.io') && !window.location.hash) {
-        const path = window.location.pathname.replace('/client2', '');
-        window.location.href = '/client2/#' + path + window.location.search;
+    
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      const search = window.location.search;
+      
+      if (window.location.hostname.includes('github.io')) {
+        const basePath = '/client2';
+        const cleanPath = path.replace(basePath, '');
+        
+        // Always redirect to main app - let React Router handle the routing
+        window.location.href = basePath + '/#' + cleanPath + search;
       }
     </script>
     <noscript>
