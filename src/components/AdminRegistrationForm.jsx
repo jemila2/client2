@@ -295,6 +295,304 @@
 
 
 
+// import { useState, useEffect } from 'react';
+// import { useAuth } from '../context/AuthContext';
+// import { toast } from 'react-toastify';
+// import { useNavigate } from 'react-router-dom';
+
+// const AdminRegistrationForm = ({ onSuccess }) => {
+//   const { api, user, isAdmin, loading: authLoading, login } = useAuth();
+//   const navigate = useNavigate();
+//   const [formData, setFormData] = useState({
+//     name: '', email: '', password: '', confirmPassword: '', secretKey: ''
+//   });
+//   const [loading, setLoading] = useState(false);
+//   const [adminExists, setAdminExists] = useState(false);
+//   const [checkingAdmin, setCheckingAdmin] = useState(true);
+
+//   // Redirect if user is already admin
+//   useEffect(() => {
+//     if (!authLoading) {
+//       if (user && isAdmin()) {
+//         toast.info('You are already an administrator. Redirecting to dashboard...');
+//         navigate('/dashboard');
+//       }
+//     }
+//   }, [user, isAdmin, authLoading, navigate]);
+
+//   useEffect(() => {
+//     const checkAdminExists = async () => {
+//       try {
+//         console.log('Checking if admin exists...');
+//         // ✅ FIXED: Added /api/ prefix
+//         const response = await api.get('/api/admin/admin-exists', {
+//           timeout: 10000
+//         });
+//         setAdminExists(response.data.adminExists);
+//         console.log('Admin exists:', response.data.adminExists);
+//       } catch (error) {
+//         console.error('Error checking admin existence:', error);
+        
+//         if (error.code === 'ECONNABORTED') {
+//           console.log('Backend timeout, assuming no admin exists');
+//           setAdminExists(false);
+//           toast.info('Backend is slow to respond. You can try creating an admin account.');
+//         } else if (error.response?.status === 404) {
+//           console.log('Admin endpoint not found, trying alternative approach');
+//           // Try the standard users endpoint as fallback
+//           try {
+//             const usersResponse = await api.get('/api/users');
+//             const adminUsers = usersResponse.data.filter(u => u.role === 'admin');
+//             setAdminExists(adminUsers.length > 0);
+//           } catch (fallbackError) {
+//             console.log('Fallback also failed, assuming no admin exists');
+//             setAdminExists(false);
+//           }
+//         } else {
+//           console.log('Other error, assuming no admin exists');
+//           setAdminExists(false);
+//           toast.info('Could not verify admin status. You can try creating an admin account.');
+//         }
+//       } finally {
+//         setCheckingAdmin(false);
+//       }
+//     };
+
+//     const timer = setTimeout(() => {
+//       checkAdminExists();
+//     }, 1000);
+
+//     return () => clearTimeout(timer);
+//   }, [api]);
+
+//   // If user is logged in but not admin, show message
+//   if (user && !isAdmin()) {
+//     return (
+//       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+//         <h3 className="text-xl font-bold mb-4 text-center text-red-600">Access Denied</h3>
+//         <p className="text-gray-600 text-center mb-4">
+//           You are logged in as a {user.role}, but admin access is required to create new admin accounts.
+//         </p>
+//         <div className="text-center">
+//           <button
+//             onClick={() => navigate('/dashboard')}
+//             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+//           >
+//             Go to Dashboard
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     if (formData.password !== formData.confirmPassword) {
+//       toast.error('Passwords do not match');
+//       setLoading(false);
+//       return;
+//     }
+
+//     if (formData.secretKey !== 'ADMIN_SETUP_2024') {
+//       toast.error('Invalid admin secret key');
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       console.log('Attempting to create admin account...');
+//       // ✅ FIXED: Added /api/ prefix
+//       const response = await api.post('/api/admin/register-admin', {
+//         name: formData.name,
+//         email: formData.email,
+//         password: formData.password,
+//         secretKey: formData.secretKey
+//       }, {
+//         timeout: 30000
+//       });
+
+//       toast.success('Admin account created successfully!');
+      
+//       if (response.data.token) {
+//         localStorage.setItem('token', response.data.token);
+//         window.location.href = '/dashboard';
+//       }
+      
+//       setFormData({
+//         name: '',
+//         email: '',
+//         password: '',
+//         confirmPassword: '',
+//         secretKey: ''
+//       });
+
+//       setAdminExists(true);
+//       if (onSuccess) onSuccess();
+
+//     } catch (error) {
+//       console.error('Registration error:', error);
+      
+//       if (error.response?.status === 404) {
+//         toast.error('Admin registration endpoint not found. Please check backend implementation.');
+//       } else if (error.response?.data?.message) {
+//         toast.error(error.response.data.message);
+//       } else {
+//         toast.error('Failed to create admin account. Please try again.');
+//       }
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleChange = (e) => {
+//     setFormData({
+//       ...formData,
+//       [e.target.name]: e.target.value
+//     });
+//   };
+
+//   // Show message if admin already exists
+//   if (checkingAdmin) {
+//     return (
+//       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+//         <div className="animate-pulse">
+//           <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto mb-4"></div>
+//           <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto"></div>
+//         </div>
+//         <p className="text-center text-gray-600 mt-4">Checking admin status...</p>
+//       </div>
+//     );
+//   }
+
+//   if (adminExists) {
+//     return (
+//       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+//         <h3 className="text-xl font-bold mb-4 text-center text-green-600">Admin Account Exists</h3>
+//         <p className="text-gray-600 text-center">
+//           An admin account has already been created. Only one admin is allowed in the system.
+//         </p>
+//         <p className="text-sm text-gray-500 text-center mt-4">
+//           Please use the existing admin account to manage the system.
+//         </p>
+//         <div className="mt-6 text-center">
+//           <button
+//             onClick={() => navigate('/login')}
+//             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mr-2"
+//           >
+//             Go to Login
+//           </button>
+//           <button
+//             onClick={() => window.location.reload()}
+//             className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+//           >
+//             Refresh Page
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+//       <h3 className="text-xl font-bold mb-4 text-center">Initial Admin Setup</h3>
+//       <p className="text-gray-600 mb-4 text-center text-sm">
+//         Create the first and only admin account for your application
+//       </p>
+      
+//       <form onSubmit={handleSubmit} className="space-y-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700">Full Name *</label>
+//           <input
+//             type="text"
+//             name="name"
+//             required
+//             value={formData.name}
+//             onChange={handleChange}
+//             className="w-full p-2 border border-gray-300 rounded mt-1"
+//             placeholder="Enter admin full name"
+//             disabled={loading}
+//           />
+//         </div>
+        
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700">Email *</label>
+//           <input
+//             type="email"
+//             name="email"
+//             required
+//             value={formData.email}
+//             onChange={handleChange}
+//             className="w-full p-2 border border-gray-300 rounded mt-1"
+//             placeholder="Enter admin email address"
+//             disabled={loading}
+//           />
+//         </div>
+        
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700">Password *</label>
+//           <input
+//             type="password"
+//             name="password"
+//             required
+//             value={formData.password}
+//             onChange={handleChange}
+//             className="w-full p-2 border border-gray-300 rounded mt-1"
+//             placeholder="Create a strong password (min. 6 characters)"
+//             minLength="6"
+//             disabled={loading}
+//           />
+//         </div>
+        
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700">Confirm Password *</label>
+//           <input
+//             type="password"
+//             name="confirmPassword"
+//             required
+//             value={formData.confirmPassword}
+//             onChange={handleChange}
+//             className="w-full p-2 border border-gray-300 rounded mt-1"
+//             placeholder="Confirm your password"
+//             minLength="6"
+//             disabled={loading}
+//           />
+//         </div>
+        
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700">Admin Secret Key *</label>
+//           <input
+//             type="password"
+//             name="secretKey"
+//             required
+//             value={formData.secretKey}
+//             onChange={handleChange}
+//             className="w-full p-2 border border-gray-300 rounded mt-1"
+//             placeholder="Enter the admin setup key"
+//             disabled={loading}
+//           />
+//           <p className="text-xs text-gray-500 mt-1">Hint: ADMIN_SETUP_2024</p>
+//         </div>
+
+//         <button
+//           type="submit"
+//           disabled={loading}
+//           className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+//         >
+//           {loading ? 'Creating Admin Account...' : 'Create Admin Account'}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default AdminRegistrationForm;
+
+
+
+
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -310,21 +608,11 @@ const AdminRegistrationForm = ({ onSuccess }) => {
   const [adminExists, setAdminExists] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-  // Redirect if user is already admin
-  useEffect(() => {
-    if (!authLoading) {
-      if (user && isAdmin()) {
-        toast.info('You are already an administrator. Redirecting to dashboard...');
-        navigate('/dashboard');
-      }
-    }
-  }, [user, isAdmin, authLoading, navigate]);
-
+  // Check if admin exists on component mount
   useEffect(() => {
     const checkAdminExists = async () => {
       try {
         console.log('Checking if admin exists...');
-        // ✅ FIXED: Added /api/ prefix
         const response = await api.get('/api/admin/admin-exists', {
           timeout: 10000
         });
@@ -333,13 +621,9 @@ const AdminRegistrationForm = ({ onSuccess }) => {
       } catch (error) {
         console.error('Error checking admin existence:', error);
         
-        if (error.code === 'ECONNABORTED') {
-          console.log('Backend timeout, assuming no admin exists');
-          setAdminExists(false);
-          toast.info('Backend is slow to respond. You can try creating an admin account.');
-        } else if (error.response?.status === 404) {
-          console.log('Admin endpoint not found, trying alternative approach');
-          // Try the standard users endpoint as fallback
+        // If we get a 404, it might be because the route doesn't exist yet
+        // Let's try an alternative approach - check if any users have admin role
+        if (error.response?.status === 404) {
           try {
             const usersResponse = await api.get('/api/users');
             const adminUsers = usersResponse.data.filter(u => u.role === 'admin');
@@ -349,41 +633,23 @@ const AdminRegistrationForm = ({ onSuccess }) => {
             setAdminExists(false);
           }
         } else {
-          console.log('Other error, assuming no admin exists');
           setAdminExists(false);
-          toast.info('Could not verify admin status. You can try creating an admin account.');
         }
       } finally {
         setCheckingAdmin(false);
       }
     };
 
-    const timer = setTimeout(() => {
-      checkAdminExists();
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    checkAdminExists();
   }, [api]);
 
   // If user is logged in but not admin, show message
-  if (user && !isAdmin()) {
-    return (
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
-        <h3 className="text-xl font-bold mb-4 text-center text-red-600">Access Denied</h3>
-        <p className="text-gray-600 text-center mb-4">
-          You are logged in as a {user.role}, but admin access is required to create new admin accounts.
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            Go to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!authLoading && user && !isAdmin() && adminExists) {
+      toast.info('An admin account already exists. Redirecting...');
+      navigate('/dashboard');
+    }
+  }, [user, isAdmin, authLoading, adminExists, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -395,15 +661,8 @@ const AdminRegistrationForm = ({ onSuccess }) => {
       return;
     }
 
-    if (formData.secretKey !== 'ADMIN_SETUP_2024') {
-      toast.error('Invalid admin secret key');
-      setLoading(false);
-      return;
-    }
-
     try {
       console.log('Attempting to create admin account...');
-      // ✅ FIXED: Added /api/ prefix
       const response = await api.post('/api/admin/register-admin', {
         name: formData.name,
         email: formData.email,
@@ -415,29 +674,37 @@ const AdminRegistrationForm = ({ onSuccess }) => {
 
       toast.success('Admin account created successfully!');
       
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        window.location.href = '/dashboard';
+      // Automatically log in the new admin
+      try {
+        const loginResponse = await api.post('/api/auth/login', {
+          email: formData.email,
+          password: formData.password
+        });
+        
+        if (loginResponse.data.token) {
+          localStorage.setItem('token', loginResponse.data.token);
+          // Update auth context
+          login(loginResponse.data.user, loginResponse.data.token);
+          toast.success('Logged in successfully!');
+          navigate('/dashboard');
+        }
+      } catch (loginError) {
+        console.error('Auto-login failed:', loginError);
+        toast.info('Admin account created. Please log in manually.');
+        navigate('/login');
       }
       
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        secretKey: ''
-      });
-
       setAdminExists(true);
       if (onSuccess) onSuccess();
 
     } catch (error) {
       console.error('Registration error:', error);
       
-      if (error.response?.status === 404) {
-        toast.error('Admin registration endpoint not found. Please check backend implementation.');
-      } else if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
+      if (error.response?.status === 403) {
+        toast.error('Admin already exists or invalid secret key');
+        setAdminExists(true);
+      } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
       } else {
         toast.error('Failed to create admin account. Please try again.');
       }
@@ -453,7 +720,7 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     });
   };
 
-  // Show message if admin already exists
+  // Show loading while checking admin status
   if (checkingAdmin) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
@@ -466,39 +733,32 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     );
   }
 
+  // If admin already exists, don't show the form
   if (adminExists) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
         <h3 className="text-xl font-bold mb-4 text-center text-green-600">Admin Account Exists</h3>
         <p className="text-gray-600 text-center">
-          An admin account has already been created. Only one admin is allowed in the system.
-        </p>
-        <p className="text-sm text-gray-500 text-center mt-4">
-          Please use the existing admin account to manage the system.
+          An admin account has already been registered for this system.
         </p>
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate('/login')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mr-2"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             Go to Login
-          </button>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-          >
-            Refresh Page
           </button>
         </div>
       </div>
     );
   }
 
+  // Show the registration form only if no admin exists
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
       <h3 className="text-xl font-bold mb-4 text-center">Initial Admin Setup</h3>
       <p className="text-gray-600 mb-4 text-center text-sm">
-        Create the first and only admin account for your application
+        Create the first admin account for your application
       </p>
       
       <form onSubmit={handleSubmit} className="space-y-4">
