@@ -2,14 +2,13 @@
 // e
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:10000';
-
-
+const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app'; // ← YOUR ACTUAL URL
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
-   timeout: 15000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json'
   }
 });
 

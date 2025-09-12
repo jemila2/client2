@@ -15,16 +15,19 @@ export function AuthProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   
-  const API_BASE_URL = 'https://backend-21-2fu1.onrender.com';
-  const api = axios.create({
-    baseURL: `${API_BASE_URL}/api`,
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
+  // ... other imports and code ...
 
+const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app'; // ← YOUR ACTUAL URL
+const api = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
+
+// ... rest of your code remains the same ...
   // Request interceptor
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
