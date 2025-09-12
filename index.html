@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,4 +10,288 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .main-content {
+            flex: 3;
+            padding: 20px;
+            min-width: 300px;
+        }
+        
+        .sidebar {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-left: 20px;
+            min-width: 250px;
+        }
+        
+        .issue {
+            background: #fff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .issue h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .solution {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .solution h3 {
+            color: #48bb78;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .tip {
+            background: #fffbeb;
+            border-left: 4px solid #f6ad55;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .tip h3 {
+            color: #ed8936;
+            margin-bottom: 10px;
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .file-structure {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .file-structure div {
+            font-family: 'Fira Code', monospace;
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JavaScript Module Loading Error</h1>
+            <p class="subtitle">Fixing the 404 error for main.jsx in your React application</p>
+        </header>
+        
+        <div class="content">
+            <div class="main-content">
+                <div class="issue">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Error: GET https://jemila2.github.io/src/main.jsx net::ERR_ABORTED 404 (Not Found)</h3>
+                    <p>This error occurs when the browser cannot find your JavaScript entry file. This is usually caused by incorrect file paths in your HTML file or build configuration.</p>
+                </div>
+                
+                <div class="solution">
+                    <h3><i class="fas fa-check-circle"></i> Solution 1: Check your file paths</h3>
+                    <p>Make sure your HTML file references the correct path to your JavaScript files. If you're using a build tool like Vite or Create React App, the output structure might be different.</p>
+                    
+                    <div class="code-block">
+&lt;!-- Incorrect --&gt;
+&lt;script type="module" src="/src/main.jsx"&gt;&lt;/script&gt;
+
+&lt;!-- Correct for most build tools --&gt;
+&lt;script type="module" src="./src/main.jsx"&gt;&lt;/script&gt;
+&lt;script type="module" src="/dist/main.js"&gt;&lt;/script&gt;
+&lt;script type="module" src="/assets/index.js"&gt;&lt;/script&gt;
+                    </div>
+                </div>
+                
+                <div class="solution">
+                    <h3><i class="fas fa-check-circle"></i> Solution 2: Check your project structure</h3>
+                    <p>Ensure your project has the correct file structure. Here's what a typical React project looks like:</p>
+                    
+                    <div class="file-structure">
+                        <div>my-react-app/</div>
+                        <div>├── public/</div>
+                        <div>│   ├── index.html</div>
+                        <div>│   └── favicon.ico</div>
+                        <div>├── src/</div>
+                        <div>│   ├── main.jsx (or main.js)</div>
+                        <div>│   ├── App.jsx</div>
+                        <div>│   └── ...other files</div>
+                        <div>├── package.json</div>
+                        <div>└── vite.config.js (or other config files)</div>
+                    </div>
+                </div>
+                
+                <div class="solution">
+                    <h3><i class="fas fa-check-circle"></i> Solution 3: Configure your server for GitHub Pages</h3>
+                    <p>If deploying to GitHub Pages, you need to set the correct base path in your build configuration:</p>
+                    
+                    <div class="code-block">
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/your-repo-name/', // For GitHub Pages
+})
+                    </div>
+                    
+                    <div class="code-block">
+// For Create React App
+// Add this to your package.json
+"homepage": "https://jemila2.github.io/your-repo-name"
+                    </div>
+                </div>
+                
+                <div class="tip">
+                    <h3><i class="fas fa-lightbulb"></i> Additional Tips</h3>
+                    <ul>
+                        <li>Run <code>npm run build</code> and serve the <code>dist</code> or <code>build</code> folder</li>
+                        <li>Check your server configuration to ensure it serves JSX files with the correct MIME type</li>
+                        <li>Use relative paths instead of absolute paths for your assets</li>
+                        <li>Clear your browser cache after making changes</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <h3>Common Deployment Issues</h3>
+                <ul>
+                    <li>Incorrect file paths</li>
+                    <li>Missing build step</li>
+                    <li>Server configuration issues</li>
+                    <li>Case sensitivity in file names</li>
+                    <li>GitHub Pages base path configuration</li>
+                </ul>
+                
+                <h3>Quick Checks</h3>
+                <ul>
+                    <li>Verify the file exists at the path</li>
+                    <li>Check case sensitivity (Main.jsx vs main.jsx)</li>
+                    <li>Test with a simple file path first</li>
+                    <li>Check your build output directory</li>
+                </ul>
+                
+                <h3>For GitHub Pages</h3>
+                <ul>
+                    <li>Set the base property in vite.config.js</li>
+                    <li>Use the gh-pages package for deployment</li>
+                    <li>Enable GitHub Pages in repo settings</li>
+                    <li>Select the correct branch (gh-pages or docs)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('.code-block');
+            
+            codeBlocks.forEach(block => {
+                block.addEventListener('click', function() {
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(this);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                });
+            });
+        });
+    </script>
+</body>
 </html>
