@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
   
   return {
-    base: isProduction ? '/client2/' : '/',
+    base: 'https://jemila2.github.io/client2/',
     
     plugins: [react()],
     

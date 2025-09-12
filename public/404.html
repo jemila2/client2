@@ -2,29 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Redirecting...</title>
+    <title>Redirecting</title>
     <script>
-      // Redirect all 404s to index.html for React Router
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      const search = window.location.search;
-      
-      if (window.location.hostname.includes('github.io')) {
-        const basePath = '/client2';
-        const cleanPath = path.replace(basePath, '');
-        const fullPath = cleanPath + search + (hash || '#/');
-        
-        if (!hash) {
-          window.location.href = basePath + '/#' + fullPath;
-        }
-      }
+      window.location.href = '/client2/';
     </script>
-    <noscript>
-      <meta http-equiv="refresh" content="0; url=/client2/" />
-    </noscript>
   </head>
   <body>
-    <p>Redirecting to LaundryPro app...</p>
-    <p>If not redirected, <a href="/client2/">click here</a>.</p>
+    <p>Redirecting...</p>
   </body>
 </html>

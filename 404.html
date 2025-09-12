@@ -2,27 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Redirecting to LaundryPro</title>
+    <title>Redirecting</title>
     <script>
-    
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      const search = window.location.search;
-      
-      if (window.location.hostname.includes('github.io')) {
-        const basePath = '/client2';
-        const cleanPath = path.replace(basePath, '');
-        
-        // Always redirect to main app - let React Router handle the routing
-        window.location.href = basePath + '/#' + cleanPath + search;
-      }
+      window.location.href = '/client2/';
     </script>
-    <noscript>
-      <meta http-equiv="refresh" content="0; url=/client2/" />
-    </noscript>
   </head>
   <body>
-    <p>Redirecting to LaundryPro app...</p>
-    <p>If not redirected, <a href="/client2/">click here</a>.</p>
+    <p>Redirecting...</p>
   </body>
 </html>
