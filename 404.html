@@ -4,18 +4,27 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // Get the path from the URL
+      // Redirect all 404s to index.html for React Router
       const path = window.location.pathname;
-      const isGitHubPages = window.location.hostname.includes('github.io');
+      const hash = window.location.hash;
+      const search = window.location.search;
       
-      // Redirect to the main page with the path as a hash
-      if (isGitHubPages && path !== '/client2/') {
-        const newPath = path.replace('/client2', '');
-        window.location.href = '/client2/#' + newPath;
+      if (window.location.hostname.includes('github.io')) {
+        const basePath = '/client2';
+        const cleanPath = path.replace(basePath, '');
+        const fullPath = cleanPath + search + (hash || '#/');
+        
+        if (!hash) {
+          window.location.href = basePath + '/#' + fullPath;
+        }
       }
     </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/client2/" />
+    </noscript>
   </head>
   <body>
-    <p>Redirecting...</p>
+    <p>Redirecting to LaundryPro app...</p>
+    <p>If not redirected, <a href="/client2/">click here</a>.</p>
   </body>
 </html>
