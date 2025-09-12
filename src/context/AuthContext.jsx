@@ -16,7 +16,6 @@ export function AuthProvider({ children }) {
   const [usersLoading, setUsersLoading] = useState(false);
   
   // ... other imports and code ...
-
 const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app'; // ← YOUR ACTUAL URL
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -26,6 +25,7 @@ const api = axios.create({
     'Accept': 'application/json'
   }
 });
+
 
 // ... rest of your code remains the same ...
   // Request interceptor

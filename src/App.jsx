@@ -72,7 +72,7 @@ const AdminSetupCheck = ({ children }) => {
   useEffect(() => {
     const checkAdminExists = async () => {
       try {
-        const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
+const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app';
         const response = await fetch(`${API_BASE_URL}/admin/admin-exists`); // Fixed endpoint
         
         if (response.ok) {
