@@ -11,6 +11,9 @@ const DashboardLayout = () => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
 
+  // Add debug logging
+  console.log('DashboardLayout - User:', user);
+
   return (
     <div className="flex h-screen bg-gray-50">
       {user && (
@@ -22,6 +25,7 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar onMenuToggle={toggleSidebar} />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          {/* This is where the nested routes will render */}
           <Outlet />
         </main>
       </div>

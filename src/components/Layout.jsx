@@ -1,35 +1,36 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
-import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import Navbar from './Navbar';
+import { Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { user } = useAuth(); // Now this will work
+const DashboardLayout = () => {
+  const { user } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
+
+  // Add debug logging
+  console.log('DashboardLayout - User:', user);
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar - Only show if user is logged in */}
-      {user && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
-      
-      {/* Main Content Area */}
+      {user && (
+        <Sidebar 
+          isOpen={isSidebarOpen} 
+          onClose={closeSidebar} 
+        />
+      )}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
-        <Navbar toggleSidebar={toggleSidebar} />
-        
-        {/* Main Content */}
+        <Navbar onMenuToggle={toggleSidebar} />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+          {/* This is where the nested routes will render */}
+          <Outlet />
         </main>
       </div>
     </div>
   );
 };
 
-export default Layout;
+export default DashboardLayout;

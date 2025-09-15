@@ -2,16 +2,17 @@
 // e
 import axios from 'axios';
 
-const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app'; // ← YOUR ACTUAL URL
+// context/AuthContext.js
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://laundrypro-backend-production.up.railway.app';
+
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: API_BASE_URL, // ← Remove the /api prefix here
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
-
 // Request interceptor
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');

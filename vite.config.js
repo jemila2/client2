@@ -11,7 +11,8 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
   
   return {
-    base: 'https://jemila2.github.io/client2/',
+    // ✅ FIX: Remove the base URL or set it correctly for GitHub Pages
+    base: isProduction ? '/client2/' : '/',
     
     plugins: [react()],
     
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.API_BASE_URL': JSON.stringify(apiBaseUrl),
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(apiBaseUrl),
       'import.meta.env.MODE': JSON.stringify(mode),
+      'import.meta.env.VITE_BASE_PATH': JSON.stringify(isProduction ? '/client2' : '/'),
     },
     
     css: {

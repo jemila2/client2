@@ -546,41 +546,54 @@ export function AuthProvider({ children }) {
   const [customersLoading, setCustomersLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
-  
-  // ✅ FIXED: Use the correct API base URL with /api prefix
-  const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app';
-  const api = axios.create({
-    baseURL: `${API_BASE_URL}/api`, // ← This is the key fix
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
+// context/AuthContext.js
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://laundrypro-backend-production.up.railway.app';
 
-  // Request interceptor
-  api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
+const api = axios.create({
+  baseURL: API_BASE_URL, // ← Remove the /api prefix here
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
 
-  // Response interceptor to handle auth errors
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        window.location.href = '/login';
+// Request interceptor
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
+
+// Response interceptor
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      console.error('API Error Details:', {
+        url: error.config.url,
+        method: error.config.method,
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+        requestHeaders: error.config.headers
+      });
+      
+      if (error.response.status === 400) {
+        console.error('Validation errors:', error.response.data.errors);
       }
-      return Promise.reject(error);
     }
-  );
+    return Promise.reject(error);
+  }
+);
+
+
+
+
 
   const loadUser = async () => {
     try {

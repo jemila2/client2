@@ -1,3 +1,5 @@
+
+
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -109,17 +111,17 @@ const App = () => {
             </div>
           } />
 
-          {/* Protected routes - Each role has its own specific path structure */}
+          {/* Protected routes - FIXED NESTED ROUTING */}
           
-          {/* Admin routes - /admin/* */}
+          {/* Admin routes */}
           <Route path="/admin/*" element={
-  <ProtectedRoute>
-    <AdminRoute>
-      <AdminSetupCheck>
-        <DashboardLayout>
-          <Routes>
-            <Route index element={<AdminDashboard />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
+            <ProtectedRoute>
+              <AdminRoute>
+                <AdminSetupCheck>
+                  <DashboardLayout>
+                    <Routes>
+                      <Route index element={<AdminDashboard />} />
+                      <Route path="dashboard" element={<AdminDashboard />} />
                       <Route path="employees" element={<Employees />} />
                       <Route path="employees/add" element={<EmployeeForm />} />
                       <Route path="employees/edit/:id" element={<EmployeeForm />} />
@@ -139,7 +141,7 @@ const App = () => {
                       <Route path="invoices" element={<Invoices />} />
                       <Route path="payments" element={<Payments />} />
                       <Route path="settings" element={<AdminSettings />} />
-                      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+                      <Route path="*" element={<Navigate to="dashboard" replace />} />
                     </Routes>
                   </DashboardLayout>
                 </AdminSetupCheck>
@@ -147,7 +149,7 @@ const App = () => {
             </ProtectedRoute>
           } />
 
-          {/* Employee routes - /employee/* */}
+          {/* Employee routes */}
           <Route path="/employee/*" element={
             <ProtectedRoute>
               <EmployeeRoute>
@@ -168,14 +170,14 @@ const App = () => {
                     <Route path="tasks" element={<EmployeeTasks />} />
                     <Route path="reports" element={<EmployeeReports />} />
                     <Route path="messages" element={<EmployeeMessages />} />
-                    <Route path="*" element={<Navigate to="/employee/dashboard" replace />} />
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
                   </Routes>
                 </DashboardLayout>
               </EmployeeRoute>
             </ProtectedRoute>
           } />
 
-          {/* Supplier routes - /supplier/* */}
+          {/* Supplier routes */}
           <Route path="/supplier/*" element={
             <ProtectedRoute>
               <SupplierRoute>
@@ -188,14 +190,14 @@ const App = () => {
                     <Route path="inventory" element={<SupplierInventory />} />
                     <Route path="payments" element={<SupplierPayments />} />
                     <Route path="settings" element={<SupplierSettings />} />
-                    <Route path="*" element={<Navigate to="/supplier/dashboard" replace />} />
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
                   </Routes>
                 </SupplierLayout>
               </SupplierRoute>
             </ProtectedRoute>
           } />
 
-          {/* Customer routes - /customer/* */}
+          {/* Customer routes */}
           <Route path="/customer/*" element={
             <ProtectedRoute>
               <CustomerRoute>
@@ -208,7 +210,7 @@ const App = () => {
                     <Route path="orders/:orderId" element={<OrderDetailPage customerView />} />
                     <Route path="payment-history" element={<PaymentHistory />} />
                     <Route path="support" element={<Support />} />
-                    <Route path="*" element={<Navigate to="/customer/dashboard" replace />} />
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
                   </Routes>
                 </CustomerLayout>
               </CustomerRoute>
