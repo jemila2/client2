@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +7,7 @@ import {
   FiX, FiShoppingBag, FiSettings, FiPieChart 
 } from 'react-icons/fi';
 
-const Navbar = () => {
+const Navbar = ({ onMenuToggle }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { user, loading, logout, isCustomer } = useAuth();
@@ -49,27 +48,48 @@ const Navbar = () => {
   const getDashboardPath = () => {
     if (!user) return '/';
     if (isCustomer()) return '/customer/dashboard';
-    if (user.role === 'admin') return '/admin';
+    if (user.role === 'admin') return '/admin/dashboard';
     if (user.role === 'employee') return '/dashboard';
-    if (user.role === 'supplier') return '/dashboard';
+    if (user.role === 'supplier') return '/supplier/dashboard';
     return '/';
+  };
+
+  // Get the correct path for a given route based on user role
+  const getRoleSpecificPath = (route) => {
+    if (!user) return '/';
+    const rolePrefix = user.role === 'admin' ? '/admin' : 
+                      user.role === 'supplier' ? '/supplier' : 
+                      user.role === 'customer' ? '/customer' : '';
+    return `${rolePrefix}${route}`;
   };
 
   // Get the correct profile path based on user role
   const getProfilePath = () => {
     if (!user) return '/profile';
-    if (user.role === 'admin') return '/profile';
-    return `/profile/${user._id || user.id || user.employeeId}`;
+    return user.role === 'admin' 
+      ? '/profile' 
+      : `/profile/${user._id || user.id || user.employeeId}`;
   };
 
   return (
     <nav className="bg-blue-800 text-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center text-xl font-bold">
-            <span className="text-white">LaundryPro</span>
-          </Link>
+          {/* Logo and Menu Button */}
+          <div className="flex items-center">
+            {/* Menu Toggle Button for Sidebar */}
+            <button 
+              onClick={onMenuToggle}
+              className="mr-4 p-2 rounded-md text-white hover:bg-blue-700 focus:outline-none md:hidden"
+              aria-label="Toggle sidebar"
+            >
+              <FiMenu size={24} />
+            </button>
+            
+            <Link to="/" className="flex items-center text-xl font-bold">
+              <span className="text-white">LaundryPro</span>
+            </Link>
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
@@ -116,10 +136,12 @@ const Navbar = () => {
                       <FiPieChart />
                       <span>Dashboard</span>
                     </Link>
+                    
+                    {/* Customer-specific links */}
                     {isCustomer() && (
                       <>
                         <Link 
-                          to="/customer/orders" 
+                          to={getRoleSpecificPath('/orders')} 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
@@ -127,20 +149,21 @@ const Navbar = () => {
                           <span>My Orders</span>
                         </Link>
                         <Link 
-                          to="/customer/orders/new" 
+                          to={getRoleSpecificPath('/orders/new')} 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
                           <FiShoppingBag />
                           <span>New Order</span>
                         </Link>
-                   
                       </>
                     )}
+                    
+                    {/* Employee-specific links */}
                     {user.role === 'employee' && (
                       <>
                         <Link 
-                          to="/orders" 
+                          to={getRoleSpecificPath('/orders')} 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
@@ -148,7 +171,7 @@ const Navbar = () => {
                           <span>My Orders</span>
                         </Link>
                         <Link 
-                          to="/orders/new" 
+                          to={getRoleSpecificPath('/orders/new')} 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
@@ -157,8 +180,16 @@ const Navbar = () => {
                         </Link>
                       </>
                     )}
-                
+                    
                     <div className="border-t border-blue-600 my-2"></div>
+                    <Link 
+                      to={getProfilePath()} 
+                      className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                    >
+                      <FiUser />
+                      <span>Profile</span>
+                    </Link>
                     <button 
                       onClick={handleLogout}
                       className="flex items-center space-x-3 w-full text-left px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
@@ -247,10 +278,12 @@ const Navbar = () => {
                   <FiPieChart />
                   <span>Dashboard</span>
                 </Link>
+                
+                {/* Customer-specific mobile links */}
                 {isCustomer() && (
                   <>
                     <Link 
-                      to="/customer/orders" 
+                      to={getRoleSpecificPath('/orders')} 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -258,20 +291,21 @@ const Navbar = () => {
                       <span>My Orders</span>
                     </Link>
                     <Link 
-                      to="/customer/orders/new" 
+                      to={getRoleSpecificPath('/orders/new')} 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
                       <FiShoppingBag />
                       <span>New Order</span>
                     </Link>
-                
                   </>
                 )}
+                
+                {/* Employee-specific mobile links */}
                 {user.role === 'employee' && (
                   <>
                     <Link 
-                      to="/orders" 
+                      to={getRoleSpecificPath('/orders')} 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -279,7 +313,7 @@ const Navbar = () => {
                       <span>My Orders</span>
                     </Link>
                     <Link 
-                      to="/orders/new" 
+                      to={getRoleSpecificPath('/orders/new')} 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -288,7 +322,16 @@ const Navbar = () => {
                     </Link>
                   </>
                 )}
-              
+                
+                <div className="border-t border-blue-700 my-2"></div>
+                <Link 
+                  to={getProfilePath()} 
+                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
+                  onClick={toggleMobileMenu}
+                >
+                  <FiUser />
+                  <span>Profile</span>
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="flex items-center space-x-3 w-full text-left px-3 py-2 rounded-md text-white hover:bg-blue-700"

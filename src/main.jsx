@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
+
 // Handle initial load for GitHub Pages
 if (window.location.hostname.includes('github.io') && window.location.pathname !== '/client2/') {
   const path = window.location.pathname.replace('/client2', '');

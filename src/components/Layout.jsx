@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-   const { user } = useAuth();
+  const { user } = useAuth(); // Now this will work
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -12,8 +13,8 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* Sidebar - Only show if user is logged in */}
+      {user && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
       
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">

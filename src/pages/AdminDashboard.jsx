@@ -1,12 +1,23 @@
 
-import { useState, useEffect } from 'react';
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-// import { taskApi, orderApi, userApi } from '../../services/api';
 import { taskApi, orderApi, userApi } from '../services/api';
 import AssignTaskForm from '../components/AssignTaskForm';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
 import { 
   FiRefreshCw, FiPlus, FiSearch, FiCheckCircle, FiClock, 
   FiUser, FiTrash2, FiEdit, FiUsers, FiTruck, 
@@ -37,6 +48,27 @@ const AdminDashboard = () => {
     pendingRequests: 0
   });
 
+  // ✅ FIXED: Use proper environment variable access
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://laundrypro-backend-production.up.railway.app/api';
+
+  // Debug useEffect
+  useEffect(() => {
+    console.log('AdminDashboard Debug:');
+    console.log('User:', user);
+    console.log('User role:', user?.role);
+    console.log('Is admin?', user?.role === 'admin');
+    console.log('Token exists:', !!localStorage.getItem('token'));
+    
+    // Test the correct admin endpoint
+    fetch(`${API_BASE_URL}/admin/admin-exists`)
+      .then(response => {
+        console.log('Admin exists endpoint status:', response.status);
+        return response.json();
+      })
+      .then(data => console.log('Admin exists data:', data))
+      .catch(error => console.error('Admin exists error:', error));
+  }, [user, API_BASE_URL]);
+
   const formatNaira = (amount) => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
@@ -47,7 +79,6 @@ const AdminDashboard = () => {
   };
 
   const getCustomerName = (order) => {
-    
     if (order.customer && typeof order.customer === 'object') {
       if (order.customer.name) return order.customer.name;
       if (order.customer.fullName) return order.customer.fullName;
@@ -100,63 +131,55 @@ const AdminDashboard = () => {
     return 'Unknown Customer';
   };
 
-const handleEmployeeRequest = async (requestId, status) => {
-  try {
-
-    const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:10000/api';
-
-    
-    const response = await fetch(`${API_BASE_URL}/employee-requests/${requestId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ status })
-    });
-    
-    if (response.ok) {
-      toast.success(`Employee request ${status}`);
-      fetchEmployeeRequests(); 
-      fetchData(); 
-    } else {
-      throw new Error(`Failed to ${status} request`);
+  const handleEmployeeRequest = async (requestId, status) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/employee-requests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status })
+      });
+      
+      if (response.ok) {
+        toast.success(`Employee request ${status}`);
+        fetchEmployeeRequests(); 
+        fetchData(); 
+      } else {
+        throw new Error(`Failed to ${status} request`);
+      }
+    } catch (error) {
+      console.error('Error processing employee request:', error);
+      toast.error(`Failed to ${status} employee request`);
     }
-  } catch (error) {
-    console.error('Error processing employee request:', error);
-    toast.error(`Failed to ${status} employee request`);
-  }
-};
+  };
 
   const fetchEmployeeRequests = async () => {
-  try {
-
-    const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:10000/api';
-
-    const response = await fetch(`${API_BASE_URL}/employee-requests`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    try {
+      const response = await fetch(`${API_BASE_URL}/employee-requests`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setEmployeeRequests(data.requests || data.data || []);
+        
+        const pendingRequests = (data.requests || data.data || []).filter(
+          request => request.status === 'pending'
+        ).length;
+        
+        setDashboardMetrics(prev => ({
+          ...prev,
+          pendingRequests
+        }));
       }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      setEmployeeRequests(data.requests || data.data || []);
-      
-      // Update metrics
-      const pendingRequests = (data.requests || data.data || []).filter(
-        request => request.status === 'pending'
-      ).length;
-      
-      setDashboardMetrics(prev => ({
-        ...prev,
-        pendingRequests
-      }));
+    } catch (error) {
+      console.error('Error fetching employee requests:', error);
     }
-  } catch (error) {
-    console.error('Error fetching employee requests:', error);
-  }
-};
+  };
 
   const fetchData = async () => {
     try {
@@ -173,7 +196,6 @@ const handleEmployeeRequest = async (requestId, status) => {
       
       let ordersData = ordersResponse.data?.data || ordersResponse.data || [];
       
-      // Enhanced customer data handling
       if (ordersData.length > 0) {
         const ordersWithCustomers = ordersData.map(order => {
           const customerId = order.customer || order.customerId;
@@ -184,7 +206,6 @@ const handleEmployeeRequest = async (requestId, status) => {
             }
           }
           
-          // If customer is undefined but userId exists, try that
           if (!customerId && order.userId) {
             const customerUser = usersResponse.data.find(user => user._id === order.userId);
             if (customerUser) {
@@ -192,9 +213,7 @@ const handleEmployeeRequest = async (requestId, status) => {
             }
           }
           
-          // Check if customer info is directly in the order
           if (order.customerName || order.customerEmail) {
-            // Create a customer object from the direct fields
             return {
               ...order,
               customer: {
@@ -219,19 +238,17 @@ const handleEmployeeRequest = async (requestId, status) => {
         o => o.status === 'completed' || o.status === 'delivered'
       ).length;
       
-      // Use the order total directly (already in Naira)
       const totalSpent = ordersData.reduce(
         (sum, order) => sum + (order.total || 0), 0
       );
       
-      // Fetch employee requests
       await fetchEmployeeRequests();
       
       setDashboardMetrics({
         pendingOrders: pending,
         completedOrders: completed,
         totalSpent: totalSpent,
-        pendingRequests: dashboardMetrics.pendingRequests // This will be updated by fetchEmployeeRequests
+        pendingRequests: dashboardMetrics.pendingRequests
       });
       
     } catch (err) {
@@ -273,7 +290,6 @@ const handleEmployeeRequest = async (requestId, status) => {
               o._id === order._id ? {...o, status: 'processing'} : o
             ));
             
-            
             setDashboardMetrics(prev => ({
               ...prev,
               pendingOrders: prev.pendingOrders + 1,
@@ -291,7 +307,6 @@ const handleEmployeeRequest = async (requestId, status) => {
     }
   }, [tasks, orders]);
 
-  // Refresh data when tasks are updated
   useEffect(() => {
     if (user?.role === 'admin') fetchData();
   }, [user, refresh]);
@@ -336,16 +351,13 @@ const handleEmployeeRequest = async (requestId, status) => {
     }
 
     try {
-      
       await userApi.updateRole(userId, newRole);
       
-     
       setUsers(prev => prev.map(u => 
         u._id === userId ? {...u, role: newRole} : u
       ));
       
       toast.success(`User role changed to ${newRole}`);
-      
       
       if (newRole === 'employee' || users.find(u => u._id === userId)?.role === 'employee') {
         setRefresh(prev => !prev);
@@ -368,7 +380,6 @@ const handleEmployeeRequest = async (requestId, status) => {
         order._id === orderId ? {...order, status: newStatus} : order
       ));
       
-      // Update metrics
       if (newStatus === 'completed') {
         setDashboardMetrics(prev => ({
           ...prev,
@@ -403,13 +414,11 @@ const handleEmployeeRequest = async (requestId, status) => {
     
     console.log(`Order ${orderId}:`, debugInfo);
     
-   
     toast.info(
       `Order #${orderId.slice(-6)}: ${orderTasks.length} tasks, ${allCompleted ? 'ALL COMPLETED' : 'INCOMPLETE'}`,
       {
         autoClose: 3000,
         onClick: () => {
-        
           alert(`Order Debug Info:\n
 Order ID: ${orderId}\n
 Order Status: ${order?.status}\n
@@ -448,10 +457,10 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
   );
 
   const filteredRequests = employeeRequests.filter(request => 
-    request.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.status.toLowerCase().includes(searchTerm.toLowerCase())
+    request.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.status?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (user?.role !== 'admin') {
@@ -460,6 +469,13 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
         <div className="p-6 bg-white rounded-xl shadow-lg text-center max-w-md">
           <div className="text-red-500 text-2xl font-bold mb-2">Access Denied</div>
           <p className="text-gray-600">This dashboard is for administrators only.</p>
+          <p className="text-sm text-gray-500 mt-2">Your role: {user?.role || 'unknown'}</p>
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            Go to Login
+          </button>
         </div>
       </div>
     );
@@ -469,6 +485,7 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
     return (
       <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-gray-100">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+        <p className="ml-4 text-gray-600">Loading dashboard data...</p>
       </div>
     );
   }
@@ -493,7 +510,13 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="ml-0 md:ml-64 p-6">
-        {/* Header and Stats Cards */}
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+          <p className="text-gray-600">Welcome back, {user?.name}</p>
+        </div>
+
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow p-6 border-l-4 border-blue-500">
             <div className="flex justify-between items-start">
@@ -545,8 +568,6 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
             </div>
           </div>
         </div>
-        
-        
         
         {/* Tabs */}
         <div className="mb-6 border-b border-gray-200">
@@ -646,7 +667,6 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
                 </button>
               </div>
               
-              {/* Order details content here */}
               <div className="mb-4">
                 <h4 className="font-semibold">Customer Information</h4>
                 <p>{getCustomerName(showOrderDetails)}</p>
@@ -723,7 +743,7 @@ Tasks:\n${orderTasks.map(t => `- ${t.title}: ${t.status}`).join('\n')}
   );
 };
 
-// OrderTable component (unchanged)
+// OrderTable component
 const OrderTable = ({ orders, onViewDetails, debugMode, onDebug, getCustomerName }) => (
   <div className="bg-white rounded-xl shadow overflow-hidden">
     <div className="px-6 py-4 border-b border-gray-200">
