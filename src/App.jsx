@@ -1,5 +1,3 @@
-
-
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -111,68 +109,63 @@ const App = () => {
             </div>
           } />
 
-          {/* Protected routes - FIXED NESTED ROUTING */}
+          {/* Protected routes */}
           
-          {/* Admin routes */}
-          <Route path="/admin/*" element={
-            <ProtectedRoute>
-              <AdminRoute>
-                <AdminSetupCheck>
-                  <DashboardLayout>
-                    <Routes>
-                      <Route index element={<AdminDashboard />} />
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="employees" element={<Employees />} />
-                      <Route path="employees/add" element={<EmployeeForm />} />
-                      <Route path="employees/edit/:id" element={<EmployeeForm />} />
-                      <Route path="employees/:id" element={<EmployeeProfile adminView />} />
-                      <Route path="customers" element={<Customers />} />
-                      <Route path="suppliers" element={<Suppliers />} />
-                      <Route path="suppliers/add" element={<SupplierForm />} />
-                      <Route path="suppliers/:id" element={<SupplierDetail />} />
-                      <Route path="suppliers/edit/:id" element={<SupplierForm />} />
-                      <Route path="orders" element={<EmployeeOrders adminView />} />
-                      <Route path="orders/new" element={<NewOrderPage adminView />} />
-                      <Route path="orders/:orderId" element={<OrderDetailPage adminView />} />
-                      <Route path="purchase-orders" element={<PurchaseOrders />} />
-                      <Route path="purchase-orders/new" element={<CreatePurchaseOrder />} />
-                      <Route path="purchase-orders/:orderId" element={<PurchaseOrderDetail />} />
-                      <Route path="inventory" element={<Inventory />} />
-                      <Route path="invoices" element={<Invoices />} />
-                      <Route path="payments" element={<Payments />} />
-                      <Route path="settings" element={<AdminSettings />} />
-                      <Route path="*" element={<Navigate to="dashboard" replace />} />
-                    </Routes>
-                  </DashboardLayout>
-                </AdminSetupCheck>
-              </AdminRoute>
-            </ProtectedRoute>
-          } />
+     {/* Admin routes */}
+<Route path="/admin/*" element={
+  <ProtectedRoute>
+    <AdminRoute>
+    
+      <Routes>
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="employees" element={<Employees />} />
+        <Route path="employees/add" element={<EmployeeForm />} />
+        <Route path="employees/edit/:id" element={<EmployeeForm />} />
+        <Route path="employees/:id" element={<EmployeeProfile adminView />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="suppliers" element={<Suppliers />} />
+        <Route path="suppliers/add" element={<SupplierForm />} />
+        <Route path="suppliers/:id" element={<SupplierDetail />} />
+        <Route path="suppliers/edit/:id" element={<SupplierForm />} />
+        <Route path="orders" element={<EmployeeOrders adminView />} />
+        <Route path="orders/new" element={<NewOrderPage adminView />} />
+        <Route path="orders/:orderId" element={<OrderDetailPage adminView />} />
+        <Route path="purchase-orders" element={<PurchaseOrders />} />
+        <Route path="purchase-orders/new" element={<CreatePurchaseOrder />} />
+        <Route path="purchase-orders/:orderId" element={<PurchaseOrderDetail />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="invoices" element={<Invoices />} />
+        <Route path="payments" element={<Payments />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
+      </Routes>
+    </AdminRoute>
+  </ProtectedRoute>
+} />
 
-          {/* Employee routes */}
+          {/* Employee routes - FIXED */}
           <Route path="/employee/*" element={
             <ProtectedRoute>
               <EmployeeRoute>
-                <DashboardLayout>
-                  <Routes>
-                    <Route index element={<EmployeeDashboard />} />
-                    <Route path="dashboard" element={<EmployeeDashboard />} />
-                    <Route path="profile/:id" element={<EmployeeProfile />} />
-                    <Route path="orders" element={<EmployeeOrders />} />
-                    <Route path="orders/new" element={<NewOrderPage />} />
-                    <Route path="orders/:orderId" element={<OrderDetailPage />} />
-                    <Route path="manage-orders" element={<ManageOrders />} />
-                    <Route path="customers" element={<Customers employeeView />} />
-                    <Route path="customers/add" element={<CustomerForm />} />
-                    <Route path="customers/edit/:id" element={<CustomerForm />} />
-                    <Route path="customers/:id" element={<CustomerDetails />} />
-                    <Route path="schedule" element={<Schedule />} />
-                    <Route path="tasks" element={<EmployeeTasks />} />
-                    <Route path="reports" element={<EmployeeReports />} />
-                    <Route path="messages" element={<EmployeeMessages />} />
-                    <Route path="*" element={<Navigate to="dashboard" replace />} />
-                  </Routes>
-                </DashboardLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} /> {/* ADDED REDIRECT */}
+                  <Route path="dashboard" element={<EmployeeDashboard />} />
+                  <Route path="profile/:id" element={<EmployeeProfile />} />
+                  <Route path="orders" element={<EmployeeOrders />} />
+                  <Route path="orders/new" element={<NewOrderPage />} />
+                  <Route path="orders/:orderId" element={<OrderDetailPage />} />
+                  <Route path="manage-orders" element={<ManageOrders />} />
+                  <Route path="customers" element={<Customers employeeView />} />
+                  <Route path="customers/add" element={<CustomerForm />} />
+                  <Route path="customers/edit/:id" element={<CustomerForm />} />
+                  <Route path="customers/:id" element={<CustomerDetails />} />
+                  <Route path="schedule" element={<Schedule />} />
+                  <Route path="tasks" component={<EmployeeTasks />} />
+                  <Route path="reports" component={<EmployeeReports />} />
+                  <Route path="messages" component={<EmployeeMessages />} />
+                  <Route path="*" element={<Navigate to="dashboard" replace />} />
+                </Routes>
               </EmployeeRoute>
             </ProtectedRoute>
           } />
@@ -183,7 +176,7 @@ const App = () => {
               <SupplierRoute>
                 <SupplierLayout>
                   <Routes>
-                    <Route index element={<SupplierDashboard />} />
+                    <Route index element={<Navigate to="dashboard" replace />} />
                     <Route path="dashboard" element={<SupplierDashboard />} />
                     <Route path="orders" element={<SupplierOrders />} />
                     <Route path="orders/:orderId" element={<PurchaseOrderDetail external />} />
@@ -197,22 +190,20 @@ const App = () => {
             </ProtectedRoute>
           } />
 
-          {/* Customer routes */}
+          {/* Customer routes - FIXED */}
           <Route path="/customer/*" element={
             <ProtectedRoute>
               <CustomerRoute>
-                <CustomerLayout>
-                  <Routes>
-                    <Route index element={<CustomerDashboard />} />
-                    <Route path="dashboard" element={<CustomerDashboard />} />
-                    <Route path="orders" element={<CustomerOrders />} />
-                    <Route path="orders/new" element={<CustomerNewOrder />} />
-                    <Route path="orders/:orderId" element={<OrderDetailPage customerView />} />
-                    <Route path="payment-history" element={<PaymentHistory />} />
-                    <Route path="support" element={<Support />} />
-                    <Route path="*" element={<Navigate to="dashboard" replace />} />
-                  </Routes>
-                </CustomerLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} /> {/* ADDED REDIRECT */}
+                  <Route path="dashboard" element={<CustomerDashboard />} />
+                  <Route path="orders" element={<CustomerOrders />} />
+                  <Route path="orders/new" element={<CustomerNewOrder />} />
+                  <Route path="orders/:orderId" element={<OrderDetailPage customerView />} />
+                  <Route path="payment-history" element={<PaymentHistory />} />
+                  <Route path="support" element={<Support />} />
+                  <Route path="*" element={<Navigate to="dashboard" replace />} />
+                </Routes>
               </CustomerRoute>
             </ProtectedRoute>
           } />

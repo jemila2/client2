@@ -1,30 +1,10 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { supplierApi } from '../services/api'; // Import from your API service
 
-// Use environment variable for base URL
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:10000';
-
-const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`, // ✅ Use environment variable
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
-});
-
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-const SupplierForm = () => {
-  const [formData, setFormData] = useState({
+const SupplierForm = ({ editMode = false, initialData = null }) => {
+  const [formData, setFormData] = useState(initialData || {
     name: '',
     contactPerson: '',
     email: '',
@@ -69,20 +49,25 @@ const SupplierForm = () => {
 
     setLoading(true);
     try {
-      const response = await api.post('/suppliers', formData);
+      let response;
       
-      if (response.status === 201) {
+      if (editMode && initialData?._id) {
+        // Update existing supplier
+        response = await supplierApi.update(initialData._id, formData);
+        toast.success('Supplier updated successfully!', {
+          position: "top-center",
+          autoClose: 3000
+        });
+      } else {
+        // Create new supplier
+        response = await supplierApi.create(formData);
         toast.success('Supplier created successfully!', {
           position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
+          autoClose: 3000
         });
-        
-        navigate('/suppliers');
       }
+      
+      navigate('/suppliers');
     } catch (error) {
       console.error('Submission error:', error);
       
@@ -102,7 +87,8 @@ const SupplierForm = () => {
         });
         setErrors(serverErrors);
       } else {
-        toast.error(error.response?.data?.message || 'Failed to create supplier', {
+        toast.error(error.response?.data?.message || 
+                   (editMode ? 'Failed to update supplier' : 'Failed to create supplier'), {
           position: "top-center"
         });
       }
@@ -113,7 +99,9 @@ const SupplierForm = () => {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Add New Supplier</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        {editMode ? 'Edit Supplier' : 'Add New Supplier'}
+      </h1>
       
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
         {/* Name Field */}
@@ -263,10 +251,10 @@ const SupplierForm = () => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Processing...
+                {editMode ? 'Updating...' : 'Creating...'}
               </span>
             ) : (
-              'Create Supplier'
+              editMode ? 'Update Supplier' : 'Create Supplier'
             )}
           </button>
         </div>

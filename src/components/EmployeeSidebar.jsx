@@ -1,4 +1,3 @@
-
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -23,7 +22,7 @@ const EmployeeSidebar = () => {
         <nav className="space-y-1 flex-1">
           {/* Dashboard */}
           <NavLink 
-            to="/dashboard" 
+            to="/employee/dashboard" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -38,7 +37,7 @@ const EmployeeSidebar = () => {
           {/* Orders Section */}
           <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Orders</div>
           <NavLink 
-            to="/orders" 
+            to="/employee/orders" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -49,7 +48,7 @@ const EmployeeSidebar = () => {
             <span>My Orders</span>
           </NavLink>
           <NavLink 
-            to="/orders/new" 
+            to="/employee/orders/new" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -60,7 +59,7 @@ const EmployeeSidebar = () => {
             <span>New Order</span>
           </NavLink>
           <NavLink 
-            to="/employee/orders"
+            to="/employee/manage-orders"
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -74,7 +73,7 @@ const EmployeeSidebar = () => {
           {/* Customer Management */}
           <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Customers</div>
           <NavLink 
-            to="/customers" 
+            to="/employee/customers" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -88,7 +87,7 @@ const EmployeeSidebar = () => {
           {/* Schedule & Tasks */}
           <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Work</div>
           <NavLink 
-            to="/schedule" 
+            to="/employee/schedule" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -99,7 +98,7 @@ const EmployeeSidebar = () => {
             <span>Schedule</span>
           </NavLink>
           <NavLink 
-            to="/tasks" 
+            to="/employee/tasks" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -110,10 +109,23 @@ const EmployeeSidebar = () => {
             <span>Tasks</span>
           </NavLink>
 
+          {/* Reports */}
+          <NavLink 
+            to="/employee/reports" 
+            className={({ isActive }) => 
+              `flex items-center space-x-3 p-3 rounded-lg ${
+                isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
+              }`
+            }
+          >
+            <FiClipboard className="text-lg" />
+            <span>Reports</span>
+          </NavLink>
+
           {/* Communication */}
           <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Communication</div>
           <NavLink 
-            to="/messages" 
+            to="/employee/messages" 
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'
@@ -126,7 +138,7 @@ const EmployeeSidebar = () => {
 
           {/* Profile */}
           <NavLink 
-            to={`/profile/${user?._id || user?.id || user?.employeeId}`}
+            to={`/employee/profile/${user?._id || user?.id || user?.employeeId}`}
             className={({ isActive }) => 
               `flex items-center space-x-3 p-3 rounded-lg ${
                 isActive ? 'bg-blue-700' : 'hover:bg-blue-700/50'

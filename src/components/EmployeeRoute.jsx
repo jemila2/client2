@@ -1,10 +1,15 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-
-const EmployeeRoute = () => {
+const EmployeeRoute = ({ children }) => {
   const { user } = useAuth();
-  return ['employee', 'admin'].includes(user?.role) ? <Outlet /> : <Navigate to="/" replace />;
+  
+  // Check if user has employee or admin role
+  if (!['employee', 'admin'].includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
 };
 
 export default EmployeeRoute;

@@ -1,4 +1,3 @@
-
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -19,15 +18,20 @@ const Sidebar = ({ isOpen, onClose }) => {
     navigate('/login');
   };
 
-  const getDashboardPath = () => {
+  // Get the correct base path based on user role
+  const getBasePath = () => {
     if (!user) return '/';
     switch(user.role) {
       case 'admin': return '/admin';
-      case 'employee': return '/dashboard';
-      case 'supplier': return '/dashboard';
-      case 'customer': return '/customer/dashboard';
+      case 'employee': return '/employee';
+      case 'supplier': return '/supplier';
+      case 'customer': return '/customer';
       default: return '/';
     }
+  };
+
+  const getDashboardPath = () => {
+    return `${getBasePath()}/dashboard`;
   };
 
   // Get the correct profile path based on user role
@@ -39,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className={`fixed inset-y-0 left-0 w-54 bg-blue-800 text-white transform ${
+    <div className={`fixed inset-y-0 left-0 w-64 bg-blue-800 text-white transform ${
       isOpen ? 'translate-x-0' : '-translate-x-full'
     } md:translate-x-0 transition-transform duration-200 ease-in-out z-40`}>
       <div className="p-4 relative h-full flex flex-col">
@@ -66,22 +70,18 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'admin' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Management</div>
-              <NavItem to="/orders" icon={<FiLayers />}>
+              <NavItem to="/admin/orders" icon={<FiLayers />}>
                 All Orders
               </NavItem>
-              <NavItem to="/suppliers" icon={<FiTruck />}>
+              <NavItem to="/admin/suppliers" icon={<FiTruck />}>
                 Suppliers
               </NavItem>
-              
-           
-            
-              <NavItem to="/inventory" icon={<FiPackage />}>
+              <NavItem to="/admin/inventory" icon={<FiPackage />}>
                 Inventory
               </NavItem>
-              <NavItem to="/settings" icon={<FiSettings />}>
+              <NavItem to="/admin/settings" icon={<FiSettings />}>
                 Settings
               </NavItem>
-            
             </>
           )}
 
@@ -89,16 +89,15 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'employee' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Orders</div>
-              <NavItem to="/orders" icon={<FiShoppingBag />}>
+              <NavItem to="/employee/orders" icon={<FiShoppingBag />}>
                 My Orders
               </NavItem>
-              <NavItem to="/orders/new" icon={<FiPlusCircle />}>
+              <NavItem to="/employee/orders/new" icon={<FiPlusCircle />}>
                 New Order
               </NavItem>
-              <NavItem to="/customers" icon={<FiUsers />}>
+              <NavItem to="/employee/customers" icon={<FiUsers />}>
                 Customers
               </NavItem>
-             
             </>
           )}
 
@@ -106,16 +105,16 @@ const Sidebar = ({ isOpen, onClose }) => {
           {user?.role === 'supplier' && (
             <>
               <div className="text-xs uppercase text-blue-300 px-3 pt-4 pb-1">Supplier Portal</div>
-              <NavItem to="/orders" icon={<FiList />}>
+              <NavItem to="/supplier/orders" icon={<FiList />}>
                 Orders
               </NavItem>
-              <NavItem to="/inventory" icon={<FiPackage />}>
+              <NavItem to="/supplier/inventory" icon={<FiPackage />}>
                 Inventory
               </NavItem>
-              <NavItem to="/payments" icon={<FiDollarSign />}>
+              <NavItem to="/supplier/payments" icon={<FiDollarSign />}>
                 Payments
               </NavItem>
-              <NavItem to="/settings" icon={<FiSettings />}>
+              <NavItem to="/supplier/settings" icon={<FiSettings />}>
                 Settings
               </NavItem>
             </>
@@ -155,12 +154,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </p>
               </div>
             </div>
-
-            {user?.role === 'employee' && (
-              <div className="mb-4">
-             
-              </div>
-            )}
 
             <button
               onClick={handleLogout}

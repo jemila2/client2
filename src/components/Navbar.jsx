@@ -44,22 +44,23 @@ const Navbar = ({ onMenuToggle }) => {
     return user.name?.split(' ')[0] || 'Customer';
   };
 
-  // Get the correct dashboard path based on user role
+  // Get the correct dashboard path based on user role - FIXED
   const getDashboardPath = () => {
     if (!user) return '/';
     if (isCustomer()) return '/customer/dashboard';
     if (user.role === 'admin') return '/admin/dashboard';
-    if (user.role === 'employee') return '/dashboard';
+    if (user.role === 'employee') return '/employee/dashboard'; // ← FIXED
     if (user.role === 'supplier') return '/supplier/dashboard';
     return '/';
   };
 
-  // Get the correct path for a given route based on user role
+  // Get the correct path for a given route based on user role - FIXED
   const getRoleSpecificPath = (route) => {
     if (!user) return '/';
     const rolePrefix = user.role === 'admin' ? '/admin' : 
                       user.role === 'supplier' ? '/supplier' : 
-                      user.role === 'customer' ? '/customer' : '';
+                      user.role === 'customer' ? '/customer' : 
+                      user.role === 'employee' ? '/employee' : ''; // ← ADDED EMPLOYEE
     return `${rolePrefix}${route}`;
   };
 
@@ -163,7 +164,7 @@ const Navbar = ({ onMenuToggle }) => {
                     {user.role === 'employee' && (
                       <>
                         <Link 
-                          to={getRoleSpecificPath('/orders')} 
+                          to="/employee/orders" 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
@@ -171,7 +172,7 @@ const Navbar = ({ onMenuToggle }) => {
                           <span>My Orders</span>
                         </Link>
                         <Link 
-                          to={getRoleSpecificPath('/orders/new')} 
+                          to="/employee/orders/new" 
                           className="flex items-center space-x-3 px-4 py-2 text-white hover:bg-blue-600 rounded-md mx-2"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
@@ -283,7 +284,7 @@ const Navbar = ({ onMenuToggle }) => {
                 {isCustomer() && (
                   <>
                     <Link 
-                      to={getRoleSpecificPath('/orders')} 
+                      to="/customer/orders" 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -291,7 +292,7 @@ const Navbar = ({ onMenuToggle }) => {
                       <span>My Orders</span>
                     </Link>
                     <Link 
-                      to={getRoleSpecificPath('/orders/new')} 
+                      to="/customer/orders/new" 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -305,7 +306,7 @@ const Navbar = ({ onMenuToggle }) => {
                 {user.role === 'employee' && (
                   <>
                     <Link 
-                      to={getRoleSpecificPath('/orders')} 
+                      to="/employee/orders" 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >
@@ -313,7 +314,7 @@ const Navbar = ({ onMenuToggle }) => {
                       <span>My Orders</span>
                     </Link>
                     <Link 
-                      to={getRoleSpecificPath('/orders/new')} 
+                      to="/employee/orders/new" 
                       className="flex items-center space-x-3 px-3 py-2 rounded-md text-white hover:bg-blue-700"
                       onClick={toggleMobileMenu}
                     >

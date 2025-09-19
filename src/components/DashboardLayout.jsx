@@ -1,33 +1,21 @@
-import { useState } from 'react';
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
+// components/DashboardLayout.js - Minimal version
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = () => {
   const { user } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const closeSidebar = () => setIsSidebarOpen(false);
-
-  // Add debug logging
-  console.log('DashboardLayout - User:', user);
+  console.log('DashboardLayout MINIMAL - User:', user);
+  console.log('DashboardLayout MINIMAL - Component rendered');
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {user && (
-        <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={closeSidebar} 
-        />
-      )}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar onMenuToggle={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {/* This is where the nested routes will render */}
-          <Outlet />
-        </main>
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-6 bg-red-100">
+        <h1 className="text-xl font-bold">Dashboard Layout</h1>
+        <p>User: {user?.name}</p>
+      </div>
+      <div className="p-6">
+        <Outlet />
       </div>
     </div>
   );

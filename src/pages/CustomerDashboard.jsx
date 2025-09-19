@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
@@ -16,12 +15,11 @@ import {
   FiList
 } from 'react-icons/fi';
 import CustomerSidebar from '../components/CustomerSidebar';
-// import { orderApi } from '../../services/api';
 import { orderApi } from '../services/api';
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
- const [showRequestForm, setShowRequestForm] = useState(false);
+  const [showRequestForm, setShowRequestForm] = useState(false);
   const [dashboardData, setDashboardData] = useState({
     orders: {
       total: 0,
@@ -38,10 +36,10 @@ const CustomerDashboard = () => {
 
   // Function to format Naira amount without decimals
   const formatNaira = (amount) => {
-    return `₦${amount.toLocaleString('en-NG', {
+    return `₦${amount?.toLocaleString('en-NG', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    })}`;
+    }) || '0'}`;
   };
 
   // Get customer's full name
@@ -56,51 +54,75 @@ const CustomerDashboard = () => {
   };
 
   const fetchDashboardData = async () => {
-    if (!user) return;
+    if (!user || !user._id) return;
     
     try {
       setRefreshing(true);
       setError(null);
       
-      const response = await orderApi.getCustomerOrders(user._id);
-      const ordersData = response.data || [];
+      console.log('Fetching customer orders for user ID:', user._id);
       
-      // Calculate dashboard metrics
-      const total = ordersData.length;
+      // Fetch customer orders
+      const ordersResponse = await orderApi.getCustomerOrders(user._id);
+      console.log('Orders API response:', ordersResponse);
       
-      const pending = ordersData.filter(
-        o => o.status === 'pending' || o.status === 'processing'
+      let ordersData = [];
+      
+      // Handle different response structures
+      if (Array.isArray(ordersResponse)) {
+        ordersData = ordersResponse;
+      } else if (ordersResponse && Array.isArray(ordersResponse.data)) {
+        ordersData = ordersResponse.data;
+      } else if (ordersResponse && Array.isArray(ordersResponse.orders)) {
+        ordersData = ordersResponse.orders;
+      } else if (ordersResponse && ordersResponse.success && Array.isArray(ordersResponse.data)) {
+        ordersData = ordersResponse.data;
+      }
+      
+      console.log('Processed orders data:', ordersData);
+      
+      // Calculate dashboard statistics
+      const totalOrders = ordersData.length;
+      const pendingOrders = ordersData.filter(order => 
+        order.status && ['pending', 'processing', 'in-progress'].includes(order.status.toLowerCase())
       ).length;
       
-      const completed = ordersData.filter(
-        o => o.status === 'completed' || o.status === 'delivered'
+      const completedOrders = ordersData.filter(order => 
+        order.status && ['completed', 'delivered'].includes(order.status.toLowerCase())
       ).length;
       
-      // Use the order total directly (already in Naira)
-      const totalSpent = ordersData.reduce(
-        (sum, order) => sum + (order.total || 0), 0
-      );
+      const totalSpent = ordersData
+        .filter(order => order.status && ['completed', 'delivered'].includes(order.status.toLowerCase()))
+        .reduce((sum, order) => sum + (order.total || 0), 0);
       
-      const recent = ordersData
-        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-        .slice(0, 3)
+      // Get recent orders (last 5)
+      const recentOrders = ordersData
+        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+        .slice(0, 5)
         .map(order => ({
-          id: order._id,
-          number: order.orderNumber,
-          status: order.status,
-          date: order.updatedAt,
-          total: order.total || 0  // Use the total directly (already in Naira)
+          id: order._id || order.id,
+          number: order.orderNumber || order._id || 'N/A',
+          status: order.status || 'unknown',
+          date: order.createdAt || order.date || new Date(),
+          total: order.total || 0
         }));
-
+      
+      // Update dashboard data
       setDashboardData({
-        orders: { total, pending, completed, recent },
-        totalSpent
+        orders: {
+          total: totalOrders,
+          pending: pendingOrders,
+          completed: completedOrders,
+          recent: recentOrders
+        },
+        totalSpent: totalSpent
       });
       
       setLastUpdated(new Date());
+      
     } catch (err) {
       console.error('Dashboard error:', err);
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(err.response?.data?.message || err.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -108,10 +130,16 @@ const CustomerDashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    if (user && user._id) {
+      fetchDashboardData();
+    }
     
     // Set up auto-refresh every 2 minutes
-    const intervalId = setInterval(fetchDashboardData, 120000);
+    const intervalId = setInterval(() => {
+      if (user && user._id) {
+        fetchDashboardData();
+      }
+    }, 120000);
     
     return () => clearInterval(intervalId);
   }, [user]);
@@ -156,7 +184,7 @@ const CustomerDashboard = () => {
           </div>
         )}
 
-        {/* Stats Cards - Updated to 4 columns */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
@@ -207,25 +235,24 @@ const CustomerDashboard = () => {
           </div>
         </div>
 
-
-          {/* Employee Request Section */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-bold mb-4">Become an Employee</h2>
-        <p className="text-gray-600 mb-4">
-          Interested in working with us? Submit a request to become an employee.
-        </p>
-        
-        {!showRequestForm ? (
-          <button
-            onClick={() => setShowRequestForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            Request Employee Status
-          </button>
-        ) : (
-          <EmployeeRequestForm />
-        )}
-      </div>
+        {/* Employee Request Section */}
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+          <h2 className="text-xl font-bold mb-4">Become an Employee</h2>
+          <p className="text-gray-600 mb-4">
+            Interested in working with us? Submit a request to become an employee.
+          </p>
+          
+          {!showRequestForm ? (
+            <button
+              onClick={() => setShowRequestForm(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            >
+              Request Employee Status
+            </button>
+          ) : (
+            <EmployeeRequestForm />
+          )}
+        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
