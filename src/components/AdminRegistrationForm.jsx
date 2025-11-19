@@ -19,7 +19,8 @@ const AdminRegistrationForm = ({ onSuccess }) => {
   useEffect(() => {
     const checkAdminExists = async () => {
       try {
-        const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app';
+        const API_BASE_URL = 'https://perfect-victory.up.railway.app';
+        
         const response = await fetch(`${API_BASE_URL}/admin/admin-exists`);
         
         if (response.ok) {
@@ -93,7 +94,7 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     }
 
     try {
-      const API_BASE_URL = 'https://laundrypro-backend-production.up.railway.app';
+    const API_BASE_URL = 'https://perfect-victory.up.railway.app';
       const response = await fetch(`${API_BASE_URL}/admin/register-admin`, {
         method: 'POST',
         headers: {
@@ -286,5 +287,6 @@ const AdminRegistrationForm = ({ onSuccess }) => {
     </div>
   );
 };
+
 
 export default AdminRegistrationForm;
