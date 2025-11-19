@@ -33,7 +33,7 @@ const OrdersPage = () => {
       
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication required');
-      const response = await axios.get('https://laundrypro-backend-production.up.railway.app/api/orders', {
+      const response = await axios.get(''https://perfect-victory.up.railway.app/api/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -218,5 +218,6 @@ const OrdersPage = () => {
     </div>
   );
 };
+
 
 export default OrdersPage;
