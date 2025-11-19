@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://laundrypro-backend-production.up.railway.app';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://perfect-victory.up.railway.app';
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   timeout: 30000,
@@ -639,5 +639,6 @@ export const updateCustomer = async (id, customerData) => {
     throw error;
   }
 };
+
 
 export default api;
